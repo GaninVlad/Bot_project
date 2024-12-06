@@ -1,4 +1,3 @@
-import sys
 import pygame
 import requests
 
@@ -6,7 +5,6 @@ import requests
 def get_coordinates():
     toponym = geocode()
     toponym_coodrinates = toponym["Point"]["pos"]
-
 
 
 def geocode(address):

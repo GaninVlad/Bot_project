@@ -1,15 +1,11 @@
 import datetime
 import logging
-from telegram.ext import Application, MessageHandler, filters
-from config import BOT_TOKEN
 from flask_restful import reqparse, abort, Api, Resource
 from flask import Flask, render_template, redirect
 from flask_wtf import FlaskForm
-from wtforms.fields.simple import EmailField, BooleanField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
-
+# from wtforms.fields.simple import EmailField, BooleanField, PasswordField, SubmitField
+# from wtforms.validators import DataRequired
 from forms.user import RegisterForm
-from data import db_session
 from data.users import User
 from data.news import News
 from forms.news import NewsForm
@@ -34,8 +30,6 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-async def echo(update, context):
-    await update.message.reply_text(update.message.text)
 
 
 @login_manager.user_loader
@@ -54,9 +48,9 @@ def index():
         news = db_sess.query(News).filter(News.is_private != True)
     return render_template("index.html", news=news)
 
-@app.route('/success')
-def zas():
-    return render_template('base.html')
+# @app.route('/success')
+# def zas():
+#     return render_template('base.html')
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -120,16 +114,12 @@ def reqister():
     return render_template('register.html', title='Регистрация', form=form)
 
 def main():
-    db_session.global_init("db/blogs.db")
+    db_session.global_init("db/blogs.sqlite")
     api.add_resource(news_resources.NewsListResource, '/api/v2/news')
     api.add_resource(news_resources.NewsResource, '/api/v2/news/<int:news_id>')
     api.add_resource(users_resource.UsersListResource, '/api/v2/users')
     api.add_resource(users_resource.UsersResource, '/api/v2/users/<int:news_id>')
     app.register_blueprint(news_api.blueprint)
-    application = Application.builder().token(BOT_TOKEN).build()
-    text_handler = MessageHandler(filters.TEXT, echo)
-    application.add_handler(text_handler)
-    application.run_polling()
     app.run()
 
 
