@@ -91,7 +91,7 @@ def get_ll_spn(address):
 
 @dp.message(CommandStart())
 async def process_start_command(message: Message):
-    await message.answer(text='Старт.', reply_markup=keyboard)
+    await message.answer(text='Здравствуйте я бот-помощник учителям, выберите нужную опцию', reply_markup=keyboard)
 
 
 @dp.message(Command(commands=['help']))
@@ -415,6 +415,7 @@ async def record(message: Message):
         result = cur.execute(query).fetchall()
         con.commit()
     await message.answer('Изменение выполнено успешно')
+    print(message.text)
 
 
 async def get_response(url, params):
