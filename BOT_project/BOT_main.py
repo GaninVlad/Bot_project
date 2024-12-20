@@ -160,21 +160,24 @@ async def spisok_class_1(callback: CallbackQuery):
 async def change_spisok_class_1(message: Message):
     global flag
     flag = 1
-    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов')
+    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов\n'
+                         'Пример: 1-Иванов Иван')
 
 
 @dp.message(Command(commands=['change_list_class_2']))
 async def change_spisok_class_2(message: Message):
     global flag
     flag = 2
-    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов')
+    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов\n'
+                         'Пример: 1-Иванов Иван')
 
 
 @dp.message(Command(commands=['change_list_class_3']))
 async def change_spisok_class_3(message: Message):
     global flag
     flag = 3
-    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов')
+    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов\n'
+                         'Пример: 1-Иванов Иван')
 
 
 @dp.message(Command(commands=['lists_of_classes']))
@@ -432,7 +435,7 @@ async def set_main_menu(bot: Bot):
         BotCommand(command='/help', description='Справка'),
         BotCommand(command='/lists_of_classes', description='Узнать список одного из 3 классов'),
         BotCommand(command='/schedules_of_classes', description='Узнать расписание одного из 3 классов'),
-        BotCommand(command='/maps_of_schools', description='Узнать местоположения одной из школ Чистополя')]
+        BotCommand(command='/maps_of_schools', description='Узнать местоположение одной из школ Чистополя')]
     await bot.set_my_commands(main_menu_commands)
 
 
