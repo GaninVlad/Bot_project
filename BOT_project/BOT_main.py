@@ -50,6 +50,7 @@ keyboard_of_maps = InlineKeyboardMarkup(
                      [mapschool16_but]])
 res_str = ''
 flag = 0
+pass
 
 
 def geocode(address):
