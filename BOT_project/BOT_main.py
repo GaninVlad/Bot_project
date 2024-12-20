@@ -92,7 +92,6 @@ def get_ll_spn(address):
 @dp.message(CommandStart())
 async def process_start_command(message: Message):
     await message.answer(text='Старт.', reply_markup=keyboard)
-    print(flag)
 
 
 @dp.message(Command(commands=['help']))
@@ -161,7 +160,6 @@ async def change_spisok_class_1(message: Message):
     global flag
     flag = 1
     await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов')
-    print(flag)
 
 
 @dp.message(Command(commands=['change_list_class_2']))
@@ -169,7 +167,6 @@ async def change_spisok_class_2(message: Message):
     global flag
     flag = 2
     await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов')
-    print(flag)
 
 
 @dp.message(Command(commands=['change_list_class_3']))
@@ -177,7 +174,6 @@ async def change_spisok_class_3(message: Message):
     global flag
     flag = 3
     await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов')
-    print(flag)
 
 
 @dp.message(Command(commands=['lists_of_classes']))
@@ -400,32 +396,24 @@ async def record(message: Message):
     msg = msg.split('-')
     number = msg[0]
     name = msg[1]
-    # query = f"""UPDATE Class1 SET Student = '{name}' WHERE id = '{number}'"""
-    # con = sqlite3.connect('project_bd.sqlite')
-    # cur = con.cursor()
-    # result = cur.execute(query).fetchall()
-    # con.commit()
     if flag == 1:
         query = f"""UPDATE Class1 SET Student = '{name}' WHERE id = '{number}'"""
         con = sqlite3.connect('project_bd.sqlite')
         cur = con.cursor()
         result = cur.execute(query).fetchall()
         con.commit()
-        print(flag)
     elif flag == 2:
         query = f"""UPDATE Class2 SET Student = '{name}' WHERE id = '{number}'"""
         con = sqlite3.connect('project_bd.sqlite')
         cur = con.cursor()
         result = cur.execute(query).fetchall()
         con.commit()
-        print(flag)
     elif flag == 3:
         query = f"""UPDATE Class3 SET Student = '{name}' WHERE id = '{number}'"""
         con = sqlite3.connect('project_bd.sqlite')
         cur = con.cursor()
         result = cur.execute(query).fetchall()
         con.commit()
-        print(flag)
     await message.answer('Изменение выполнено успешно')
 
 
