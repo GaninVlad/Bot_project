@@ -16,12 +16,11 @@ button_2 = KeyboardButton(text='/help')
 button_3 = KeyboardButton(text='/lists_of_classes')
 button_4 = KeyboardButton(text='/schedules_of_classes')
 button_5 = KeyboardButton(text='/maps_of_schools')
-button_6 = KeyboardButton(text='/change_list_class_1')
-button_7 = KeyboardButton(text='/change_list_class_2')
-button_8 = KeyboardButton(text='/change_list_class_3')
-keyboard = ReplyKeyboardMarkup(keyboard=[[button_1, button_2],
-                                         [button_3, button_4, button_5],
-                                         [button_6, button_7, button_8]])
+button_12 = KeyboardButton(text='/change_lists_of_classes')
+button_13 = KeyboardButton(text='/change_classes_schedules')
+keyboard = ReplyKeyboardMarkup(keyboard=[[button_1, button_2, button_5],
+                                         [button_3, button_12],
+                                         [button_4, button_13]])
 klass_1_but = InlineKeyboardButton(text='Список 1 класса', callback_data='list_class1')
 klass_2_but = InlineKeyboardButton(text='Список 2 класса', callback_data='list_class2')
 klass_3_but = InlineKeyboardButton(text='Список 3 класса', callback_data='list_class3')
@@ -29,6 +28,13 @@ keyboard_klasses = InlineKeyboardMarkup(
     inline_keyboard=[[klass_1_but],
                      [klass_2_but],
                      [klass_3_but]])
+change_klass1 = InlineKeyboardButton(text='Изменить список 1 класса', callback_data='change_list_class_1')
+change_klass2 = InlineKeyboardButton(text='Изменить список 2 класса', callback_data='change_list_class_2')
+change_klass3 = InlineKeyboardButton(text='Изменить список 3 класса', callback_data='change_list_class_3')
+keyboard_change_klasses = InlineKeyboardMarkup(
+    inline_keyboard=[[change_klass1],
+                     [change_klass2],
+                     [change_klass3]])
 schedule_but_1 = InlineKeyboardButton(text='Расписание 1 класса', callback_data='schedule_class1')
 schedule_but_2 = InlineKeyboardButton(text='Расписание 2 класса', callback_data='schedule_class2')
 schedule_but_3 = InlineKeyboardButton(text='Расписание 3 класса', callback_data='schedule_class3')
@@ -36,6 +42,13 @@ keyboard_schedules = InlineKeyboardMarkup(
     inline_keyboard=[[schedule_but_1],
                      [schedule_but_2],
                      [schedule_but_3]])
+change_schedules_klass1 = InlineKeyboardButton(text='Изменить список 1 класса', callback_data='change_schedule_class_1')
+change_schedule_klass2 = InlineKeyboardButton(text='Изменить список 2 класса', callback_data='change_schedule_class_2')
+change_schedule_klass3 = InlineKeyboardButton(text='Изменить список 3 класса', callback_data='change_schedule_class_3')
+keyboard_change_schedules = InlineKeyboardMarkup(
+    inline_keyboard=[[change_schedules_klass1],
+                     [change_schedule_klass2],
+                     [change_schedule_klass3]])
 mapLiceum1_but = InlineKeyboardButton(text='Местоположение Лицея№1', callback_data='map_Liceum1')
 mapLiceum2_but = InlineKeyboardButton(text='Местоположение Лицея№2', callback_data='map_Liceum2')
 mapGimnazia1_but = InlineKeyboardButton(text='Местоположение Гимназии№1', callback_data='map_Gimnazia1')
@@ -56,7 +69,7 @@ pass
 def geocode(address):
     geocoder_request = f"http://geocode-maps.yandex.ru/1.x/"
     geocoder_params = {
-        "apikey": '40d1649f-0493-4b70-98ba-98533de7710b',
+        "apikey": '97c2da5d-a626-4f61-9226-f059887f2cb0',
         "geocode": address,
         "format": "json"}
 
@@ -97,24 +110,24 @@ async def process_start_command(message: Message):
 
 @dp.message(Command(commands=['help']))
 async def help(message: Message):
-    await message.answer('/lists_of_classes - вызывает несколько кнопок с выбором списка одного из классов\n'
+    await message.answer('/start - начало работы с ботом\n'
+                         '/lists_of_classes - вызывает несколько кнопок с выбором списка одного из классов\n'
                          '/schedules_of_classes - вызывает несколько кнопок с выбором расписания одного из классов\n'
                          '/maps_of_schools - вызывает несколько кнопок с выбором местоположения одной из школ Чистополя\n'
-                         '/change_list_class_1 - изменение списка учеников 1 класса\n'
-                         '/change_list_class_2 - изменение списка учеников 2 класса\n'
-                         '/change_list_class_3 - изменение списка учеников 3 класса', reply_markup=keyboard)
+                         '/change_lists_of_classes - вызывает несколько кнопок для изменения списка одного из классов\n'
+                         '/change_classes_schedules - вызывает несколько кнопок для изменения расписания одного из классов', reply_markup=keyboard)
 
 
 @dp.callback_query(F.data == 'list_class1')
 async def spisok_class_1(callback: CallbackQuery):
-    query = """SELECT id, Student FROM Class1 WHERE id BETWEEN 0 AND 24"""
+    query = """SELECT id, Student, Adress FROM Class1 WHERE id BETWEEN 0 AND 18"""
     con = sqlite3.connect('project_bd.sqlite')
     cur = con.cursor()
     result = cur.execute(query).fetchall()
     f = open('bot.txt', mode='w', encoding='utf8')
     stroka = ''
     for i in result:
-        stroka = str(i[0]) + ' - ' + i[1]
+        stroka = str(i[0]) + ' - ' + i[1] + ' - ' + i[2]
         f.write(f'{stroka}\n')
     f = open('bot.txt', mode='r+', encoding='utf8')
     a = f.read()
@@ -123,15 +136,15 @@ async def spisok_class_1(callback: CallbackQuery):
 
 
 @dp.callback_query(F.data == 'list_class2')
-async def spisok_class_1(callback: CallbackQuery):
-    query = """SELECT id, Student FROM Class2 WHERE id BETWEEN 0 AND 24"""
+async def spisok_class_2(callback: CallbackQuery):
+    query = """SELECT id, Student, Adress FROM Class2 WHERE id BETWEEN 0 AND 18"""
     con = sqlite3.connect('project_bd.sqlite')
     cur = con.cursor()
     result = cur.execute(query).fetchall()
     f = open('bot.txt', mode='w', encoding='utf8')
     stroka = ''
     for i in result:
-        stroka = str(i[0]) + ' - ' + i[1]
+        stroka = str(i[0]) + ' - ' + i[1] + ' - ' + i[2]
         f.write(f'{stroka}\n')
     f = open('bot.txt', mode='r+', encoding='utf8')
     a = f.read()
@@ -140,15 +153,15 @@ async def spisok_class_1(callback: CallbackQuery):
 
 
 @dp.callback_query(F.data == 'list_class3')
-async def spisok_class_1(callback: CallbackQuery):
-    query = """SELECT id, Student FROM Class3 WHERE id BETWEEN 0 AND 24"""
+async def spisok_class_3(callback: CallbackQuery):
+    query = """SELECT id, Student, Adress FROM Class3 WHERE id BETWEEN 0 AND 18"""
     con = sqlite3.connect('project_bd.sqlite')
     cur = con.cursor()
     result = cur.execute(query).fetchall()
     f = open('bot.txt', mode='w', encoding='utf8')
     stroka = ''
     for i in result:
-        stroka = str(i[0]) + ' - ' + i[1]
+        stroka = str(i[0]) + ' - ' + i[1] + ' - ' + i[2]
         f.write(f'{stroka}\n')
     f = open('bot.txt', mode='r+', encoding='utf8')
     a = f.read()
@@ -156,28 +169,30 @@ async def spisok_class_1(callback: CallbackQuery):
     await callback.message.answer(a)
 
 
-@dp.message(Command(commands=['change_list_class_1']))
-async def change_spisok_class_1(message: Message):
+@dp.callback_query(F.data == 'change_list_class_1')
+async def change_spisok_class_1(callback: CallbackQuery):
     global flag
     flag = 1
-    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов\n'
-                         'Пример: 1-Иванов Иван')
+    await callback.answer('Введите данные')
 
-
-@dp.message(Command(commands=['change_list_class_2']))
-async def change_spisok_class_2(message: Message):
+@dp.callback_query(F.data == 'change_list_class_2')
+async def change_spisok_class_2(callback: CallbackQuery):
     global flag
     flag = 2
-    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов\n'
-                         'Пример: 1-Иванов Иван')
+    await callback.answer('Введите данные')
 
 
-@dp.message(Command(commands=['change_list_class_3']))
-async def change_spisok_class_3(message: Message):
+@dp.callback_query(F.data == 'change_list_class_3')
+async def change_spisok_class_3(callback: CallbackQuery):
     global flag
     flag = 3
-    await message.answer('Введите номер ученика от 1 до 18 и его фамилию и имя через дефис, без пробелов\n'
-                         'Пример: 1-Иванов Иван')
+    await callback.answer('Введите данные')
+
+
+@dp.message(Command(commands=['change_lists_of_classes']))
+async def change_lists_of_classes(message: Message):
+    await message.answer('Выберите пункт, который хотите увидеть.\nПосле нажатия кнопки введите номер ученика от 1 до 18,\n'
+                         'его фамилию и имя и его адрес через дефис, без пробелов. Например: 1-Иванов Иван-ул.Ленина 19', reply_markup=keyboard_change_klasses)
 
 
 @dp.message(Command(commands=['lists_of_classes']))
@@ -253,16 +268,45 @@ async def schedules_of_classes(message: Message):
     await message.answer('Выберите пункт, который хотите увидеть', reply_markup=keyboard_schedules)
 
 
+@dp.message(Command(commands=['change_classes_schedules']))
+async def change_classes_schedules(message: Message):
+    await message.answer('Выберите пункт, который хотите увидеть\nПосле нажатия кнопки введите номер урока от 1 до 7, день недели, '
+                         'где хотите его поменять, и название предмета, на '
+                         'который вы его замените через двоеточие, без пробелов\n'
+                         'Пример: 1:Понедельник:Русс.яз', reply_markup=keyboard_change_schedules)
+
+
+@dp.callback_query(F.data == 'change_schedule_class_1')
+async def change_schedule_class_1(callback: CallbackQuery):
+    global flag
+    flag = 4
+    await callback.answer('Введите данные')
+
+
+@dp.callback_query(F.data == 'change_schedule_class_2')
+async def change_schedule_class_2(callback: CallbackQuery):
+    global flag
+    flag = 5
+    await callback.answer('Введите данные')
+
+
+@dp.callback_query(F.data == 'change_schedule_class_3')
+async def change_schedule_class_3(callback: CallbackQuery):
+    global flag
+    flag = 6
+    await callback.answer('Введите данные')
+
+
 @dp.callback_query(F.data == 'map_Liceum1')
 async def map_Liceum1(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Льва+Толстого+144'
     })
-    toponym = response["response"]["GeoObjectCollection"][
-        "featureMember"][0]["GeoObject"]
+    print(response)
+    toponym = response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
     ll, spn = get_ll_spn('Чистополь,+улица+Льва+Толстого+144')
     static_api_request = f"http://static-maps.yandex.ru/1.x/?ll={ll}&spn=0.005,0.002&l=map"
     await callback.message.bot.send_photo(
@@ -274,7 +318,7 @@ async def map_Liceum1(callback: CallbackQuery):
 async def map_Liceum2(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Полющенкова+28+Б'
     })
@@ -291,7 +335,7 @@ async def map_Liceum2(callback: CallbackQuery):
 async def map_Gimnazia1(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Бебеля+121'
     })
@@ -308,7 +352,7 @@ async def map_Gimnazia1(callback: CallbackQuery):
 async def map_Gimnazia2(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Нариманова+65'
     })
@@ -325,7 +369,7 @@ async def map_Gimnazia2(callback: CallbackQuery):
 async def map_Gimnazia3(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Академика+Королёва+5'
     })
@@ -342,7 +386,7 @@ async def map_Gimnazia3(callback: CallbackQuery):
 async def map_school16(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Зелёная+2+А'
     })
@@ -359,7 +403,7 @@ async def map_school16(callback: CallbackQuery):
 async def map_school4(callback: CallbackQuery):
     geocoder_uri = "http://geocode-maps.yandex.ru/1.x/"
     response = await get_response(geocoder_uri, params={
-        "apikey": "40d1649f-0493-4b70-98ba-98533de7710b",
+        "apikey": "97c2da5d-a626-4f61-9226-f059887f2cb0",
         "format": "json",
         "geocode": 'Чистополь,+улица+Бутлерова+7+А'
     })
@@ -373,14 +417,69 @@ async def map_school4(callback: CallbackQuery):
 
 
 @dp.message(Command(commands=['maps_of_schools']))
-async def schedules_of_classes(message: Message):
+async def maps_of_classes(message: Message):
     await message.answer('Выберите пункт, который хотите увидеть', reply_markup=keyboard_of_maps)
+
+
+async def get_response(url, params):
+    logger.info(f"getting {url}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, params=params) as resp:
+            return await resp.json()
+
+
+async def set_main_menu(bot: Bot):
+    main_menu_commands = [
+        BotCommand(command='/start', description='Начать работу с ботом'),
+        BotCommand(command='/help', description='Справка'),
+        BotCommand(command='/lists_of_classes', description='Узнать список одного из 3 классов'),
+        BotCommand(command='/change_lists_of_classes', description='Изменить список одного из 3 классов'),
+        BotCommand(command='/schedules_of_classes', description='Узнать расписание одного из 3 классов'),
+        BotCommand(command='/change_classes_schedules', description='Изменить список одного из 3 классов'),
+        BotCommand(command='/maps_of_schools', description='Узнать местоположение одной из школ Чистополя')]
+    await bot.set_my_commands(main_menu_commands)
 
 
 @dp.message()
 async def record(message: Message):
     global flag
     msg = ''
+    a = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+    if ':' in message.text:
+        for j in '1234567890':
+            if j in message.text.split(':')[0]:
+                msg = message.text
+                break
+            else:
+                await message.answer('Используйте только цифры в указании номера урока')
+        for p in a:
+            if p in message.text.split(':')[1]:
+                msg = message.text
+                break
+            else:
+                await message.answer('Укажите правильный день недели')
+        msg = msg.split(':')
+        if flag == 4:
+            query = f"""UPDATE Schedule_class1 SET {msg[1]} = '{msg[2]}' WHERE id = '{msg[0]}'"""
+            con = sqlite3.connect('project_bd.sqlite')
+            cur = con.cursor()
+            result = cur.execute(query).fetchall()
+            con.commit()
+            await message.answer('Изменение прошло успешно')
+        elif flag == 5:
+            query = f"""UPDATE Schedule_class2 SET {msg[1]} = '{msg[2]}' WHERE id = '{msg[0]}'"""
+            con = sqlite3.connect('project_bd.sqlite')
+            cur = con.cursor()
+            result = cur.execute(query).fetchall()
+            con.commit()
+            await message.answer('Изменение прошло успешно')
+        elif flag == 6:
+            query = f"""UPDATE Schedule_class3 SET {msg[1]} = '{msg[2]}' WHERE id = '{msg[0]}'"""
+            con = sqlite3.connect('project_bd.sqlite')
+            cur = con.cursor()
+            result = cur.execute(query).fetchall()
+            con.commit()
+            await message.answer('Изменение прошло успешно')
     for i in range(1, 55):
         if f'{i}-' in message.text:
             mess = message.text.split('-')[1]
@@ -397,46 +496,49 @@ async def record(message: Message):
                         await message.answer('Введите ТОЛЬКО фамилию и имя')
                 else:
                     await message.answer('Введите правильные фамилию и имя')
-    msg = msg.split('-')
-    number = msg[0]
-    name = msg[1]
-    if flag == 1:
-        query = f"""UPDATE Class1 SET Student = '{name}' WHERE id = '{number}'"""
-        con = sqlite3.connect('project_bd.sqlite')
-        cur = con.cursor()
-        result = cur.execute(query).fetchall()
-        con.commit()
-    elif flag == 2:
-        query = f"""UPDATE Class2 SET Student = '{name}' WHERE id = '{number}'"""
-        con = sqlite3.connect('project_bd.sqlite')
-        cur = con.cursor()
-        result = cur.execute(query).fetchall()
-        con.commit()
-    elif flag == 3:
-        query = f"""UPDATE Class3 SET Student = '{name}' WHERE id = '{number}'"""
-        con = sqlite3.connect('project_bd.sqlite')
-        cur = con.cursor()
-        result = cur.execute(query).fetchall()
-        con.commit()
-    await message.answer('Изменение выполнено успешно')
-    print(message.text)
-
-
-async def get_response(url, params):
-    logger.info(f"getting {url}")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params) as resp:
-            return await resp.json()
-
-
-async def set_main_menu(bot: Bot):
-    main_menu_commands = [
-        BotCommand(command='/start', description='Начать работу с ботом'),
-        BotCommand(command='/help', description='Справка'),
-        BotCommand(command='/lists_of_classes', description='Узнать список одного из 3 классов'),
-        BotCommand(command='/schedules_of_classes', description='Узнать расписание одного из 3 классов'),
-        BotCommand(command='/maps_of_schools', description='Узнать местоположение одной из школ Чистополя')]
-    await bot.set_my_commands(main_menu_commands)
+                msg = msg.split('-')
+                number = msg[0]
+                name = msg[1]
+                adress = msg[2]
+                if flag == 1:
+                    query = f"""UPDATE Class1 SET Student = '{name}' WHERE id = '{number}'"""
+                    con = sqlite3.connect('project_bd.sqlite')
+                    cur = con.cursor()
+                    result = cur.execute(query).fetchall()
+                    con.commit()
+                    query = f"""UPDATE Class1 SET Adress = '{adress}' WHERE id = '{number}'"""
+                    con = sqlite3.connect('project_bd.sqlite')
+                    cur = con.cursor()
+                    result = cur.execute(query).fetchall()
+                    con.commit()
+                    await message.answer('Изменение прошло успешно')
+                    break
+                elif flag == 2:
+                    query = f"""UPDATE Class2 SET Student = '{name}' WHERE id = '{number}'"""
+                    con = sqlite3.connect('project_bd.sqlite')
+                    cur = con.cursor()
+                    result = cur.execute(query).fetchall()
+                    con.commit()
+                    query = f"""UPDATE Class2 SET Adress = '{adress}' WHERE id = '{number}'"""
+                    con = sqlite3.connect('project_bd.sqlite')
+                    cur = con.cursor()
+                    result = cur.execute(query).fetchall()
+                    con.commit()
+                    await message.answer('Изменение прошло успешно')
+                    break
+                elif flag == 3:
+                    query = f"""UPDATE Class3 SET Student = '{name}' WHERE id = '{number}'"""
+                    con = sqlite3.connect('project_bd.sqlite')
+                    cur = con.cursor()
+                    result = cur.execute(query).fetchall()
+                    con.commit()
+                    query = f"""UPDATE Class3 SET Adress = '{adress}' WHERE id = '{number}'"""
+                    con = sqlite3.connect('project_bd.sqlite')
+                    cur = con.cursor()
+                    result = cur.execute(query).fetchall()
+                    con.commit()
+                    await message.answer('Изменение прошло успешно')
+                    break
 
 
 if __name__ == '__main__':
